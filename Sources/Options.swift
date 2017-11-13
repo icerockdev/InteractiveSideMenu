@@ -102,4 +102,8 @@ public struct TransitionOptions {
         self.contentScale = contentScale
         self.visibleContentWidth = visibleContentWidth
     }
+    
+    public var shouldFinishOnCancel: ((_ progress: CGFloat, _ velocity: CGFloat) -> Bool) = { velocity, progress in
+        return (progress > 0.4 && velocity >= 0) || (progress > 0.01 && velocity > 100)
+    }
 }

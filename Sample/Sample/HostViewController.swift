@@ -40,7 +40,9 @@ class HostViewController: MenuContainerViewController {
 
         let screenSize: CGRect = UIScreen.main.bounds
         self.transitionOptions = TransitionOptions(duration: 0.4, visibleContentWidth: screenSize.width / 6)
-
+        self.transitionOptions.shouldFinishOnCancel = { (progress, velocity) -> Bool in
+          return (progress >= 0.01 && velocity >= 100) || (progress > 0.6)
+        }
         // Instantiate menu view controller by identifier
         self.menuViewController = self.storyboard!.instantiateViewController(withIdentifier: "NavigationMenu") as! MenuViewController
 
