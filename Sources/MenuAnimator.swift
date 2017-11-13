@@ -310,7 +310,7 @@ extension MenuInteractiveTransition {
                 guard let transitionContext = transitionContext else {
                     fatalError("Invalid `transitionContext` value. This property should not be nil")
                 }
-                if progress > 0.4, velocity >= 0 || progress > 0.01, velocity > 100 {
+                if options.shouldFinishOnCancel(progress, velocity) {
                     finishTransition(currentPercentComplete: progress)
                     transitionContext.finishInteractiveTransition()
                 } else {
