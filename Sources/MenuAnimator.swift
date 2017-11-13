@@ -215,8 +215,17 @@ extension MenuInteractiveTransition {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.3
         view.layer.shadowOffset = CGSize(width: -5, height: 5)
+        if isIPhoneX() {
+          view.layer.cornerRadius = 40
+          view.clipsToBounds = true
+          view.layer.masksToBounds = true
+        }
     }
-
+  
+    private func isIPhoneX() -> Bool {
+      return UIDevice().userInterfaceIdiom == .phone && UIScreen.main.nativeBounds.height == 2436
+    }
+  
     private func removeShadow(from view: UIView) {
         view.layer.shadowOffset = .zero
     }
