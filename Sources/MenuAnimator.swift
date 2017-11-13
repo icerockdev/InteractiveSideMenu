@@ -198,27 +198,49 @@ extension MenuInteractiveTransition {
                            completion: completion)
         }
     }
+  
+    private func createShadowBox(from snapshotView: UIView) -> UIView {
+        if #available(iOS 11.0, *) {
+            let safeArea = snapshotView.safeAreaLayoutGuide
+            let safeConstraints = snapshotView.constraints.filter { constraint -> Bool in
+                return
+                    safeArea.topAnchor == constraint.firstAnchor || safeArea.topAnchor == constraint.secondAnchor ||
+                        safeArea.bottomAnchor == constraint.firstAnchor || safeArea.bottomAnchor == constraint.secondAnchor ||
+                        safeArea.leadingAnchor == constraint.firstAnchor || safeArea.leadingAnchor == constraint.secondAnchor ||
+                        safeArea.trailingAnchor == constraint.firstAnchor || safeArea.trailingAnchor == constraint.secondAnchor
+            }
+            NSLayoutConstraint.deactivate(safeConstraints)
+        }
+        let box = UIView(frame: snapshotView.frame)
+        box.backgroundColor = snapshotView.backgroundColor ?? .clear
+        snapshotView.layer.masksToBounds = true
+        if isIPhoneX() {
+            box.layer.cornerRadius = 40
+            snapshotView.layer.cornerRadius = 40
+        }
+        snapshotView.removeFromSuperview()
+        snapshotView.autoresizingMask = []
+        box.addSubview(snapshotView)
+        addShadow(to: box)
+        return box
+    }
 
     private func createSnapshotView(from: UIView) -> UIView {
         guard let snapshotView = from.snapshotView(afterScreenUpdates: true) else {
             print("Invalid snapshot view. Default color will be used")
-            let placeholderView = UIView(frame: from.frame)
-            placeholderView.backgroundColor = from.backgroundColor
-            addShadow(to: placeholderView)
-            return placeholderView
+            return createShadowBox(from: from)
         }
-        addShadow(to: snapshotView)
-        return snapshotView
+        return createShadowBox(from: snapshotView)
     }
 
     private func addShadow(to view: UIView) {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOpacity = 0.3
         view.layer.shadowOffset = CGSize(width: -5, height: 5)
-        if isIPhoneX() {
-          view.layer.cornerRadius = 40
-          view.clipsToBounds = true
-          view.layer.masksToBounds = true
+        if view.layer.cornerRadius > 0 {
+            view.layer.shadowPath = UIBezierPath(roundedRect: view.bounds, cornerRadius: view.layer.cornerRadius).cgPath
+            view.layer.shouldRasterize = true
+            view.layer.rasterizationScale = UIScreen.main.scale
         }
     }
   
